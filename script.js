@@ -229,5 +229,120 @@ class RujukanKlinik {
     }
 }
 
+// Tambahkan library SheetJS CDN di <head> index.html
+// <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+// Fungsi Export Excel
+exportExcel(filter = 'semua') {
+    const rujukan = JSON.parse(localStorage.getItem('rujukan') || '[]');
+    let dataExport = [];
+
+    // Filter data berdasarkan pilihan
+    switch(filter) {
+        case 'bulan':
+            const bulanIni = new Date().getMonth();
+            dataExport = rujukan.filter(r => new Date(r.tanggal).getMonth() === bulanIni);
+            break;
+        case 'minggu':
+            const mingguLalu = new Date();
+            mingguLalu.setDate(mingguLalu.getDate() - 7);
+            dataExport = rujukan.filter(r => new Date(r.tanggal) >= mingguLalu);
+            break;
+        case 'json':
+            this.exportJSON(rujukan);
+            return;
+        default:
+            dataExport = rujukan;
+    }
+
+    if (dataExport.length === 0) {
+        this.showAlert('❌ Tidak ada data untuk diekspor!', 'warning');
+        return;
+    }
+
+    // Format data untuk Excel
+    const excelData = dataExport.map((r, index) => ({
+        'No': index + 1,
+        'No Rujukan': r.noRujukan,
+        'RM Pasien': r.rmPasien,
+        'Nama Pasien': r.namaPasien,
+        'Klinik Asal': r.klinikAsal,
+        'Klinik Tujuan': r.klinikTujuan,
+        'Dokter Penerima': r.dokterPenerima,
+        'Dokter Pengirim': r.dokterPengirim,
+        'Diagnosis': r.diagnosis || '-',
+        'Terapi': r.terapi || '-',
+        'Alasan Rujukan': r.alasanRujukan,
+        'Status': r.status.toUpperCase(),
+        'Tanggal': r.tanggal
+    }));
+
+    // Buat workbook
+    const wb = XLSX.utils.book_new();
+    const ws = XLSX.utils.json_to_sheet(excelData);
+
+    // Auto resize kolom
+    const colWidths = [
+        {wch: 6},  // No
+        {wch: 12}, // No Rujukan
+        {wch: 12}, // RM Pasien
+        {wch: 20}, // Nama Pasien
+        {wch: 18}, // Klinik Asal
+        {wch: 18}, // Klinik Tujuan
+        {wch: 20}, // Dokter Penerima
+        {wch: 15}, // Dokter Pengirim
+        {wch: 25}, // Diagnosis
+        {wch: 20}, // Terapi
+        {wch: 30}, // Alasan Rujukan
+        {wch: 10}, // Status
+        {wch: 18}  // Tanggal
+    ];
+    ws['!cols'] = colWidths;
+
+    // Header styling
+    const headerRange = XLSX.utils.decode_range(ws['!ref']);
+    for (let C = headerRange.s.c; C <= headerRange.e.c; ++C) {
+        const cellAddress = XLSX.utils.encode_cell({c: C, r: 0});
+        if (!ws[cellAddress]) continue;
+        ws[cellAddress].s = {
+            font: { bold: true, color: { rgb: "FFFFFF" } },
+            fill: { fgColor: { rgb: "2563EB" } },
+            alignment: { horizontal: "center", vertical: "center" }
+        };
+    }
+
+    // Nama file berdasarkan filter
+    const namaFile = `Laporan_Rujukan_${this.klinikSaya}_${filter}_${new Date().toISOString().slice(0,10)}.xlsx`;
+    
+    XLSX.utils.book_append_sheet(wb, ws, "Rujukan Klinik");
+    XLSX.writeFile(wb, namaFile);
+    
+    this.showAlert(`✅ ${dataExport.length} rujukan berhasil diekspor ke Excel! 📥`, 'success');
+    this.updateExportStats(rujukan);
+}
+
+// Export JSON Backup
+exportJSON(data) {
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `backup_rujukan_${new Date().toISOString().slice(0,10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    this.showAlert('📦 Backup JSON berhasil diunduh!', 'info');
+}
+
+// Update statistik export
+updateExportStats(data) {
+    const bulanIni = new Date().getMonth();
+    const mingguLalu = new Date();
+    mingguLalu.setDate(mingguLalu.getDate() - 7);
+    
+    document.getElementById('exportSemua').textContent = data.length;
+    document.getElementById('exportBulan').textContent = data.filter(r => new Date(r.tanggal).getMonth() === bulanIni).length;
+    document.getElementById('exportMinggu').textContent = data.filter(r => new Date(r.tanggal) >= mingguLalu).length;
+}
+
 // Inisialisasi aplikasi
 const app = new RujukanKlinik();
