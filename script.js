@@ -61,25 +61,27 @@ class RujukanKlinik {
         this.showAlert('Logout berhasil!', 'info');
     }
 
-    updateUI() {
-        const isLoggedIn = localStorage.getItem('loggedIn') === 'true';
-        
-        document.getElementById('userInfo').classList.toggle('d-none', !isLoggedIn);
-        document.getElementById('btnLogin').classList.toggle('d-none', isLoggedIn);
-        document.getElementById('statsSection').style.display = isLoggedIn ? 'flex' : 'none';
-        document.getElementById('fabBuatRujukan').classList.toggle('d-none', !isLoggedIn);
-        
-        if (isLoggedIn) {
-            const user = localStorage.getItem('currentUser');
-            document.getElementById('userName').textContent = user.split('@')[0].toUpperCase();
-        }
+    // Update di fungsi updateUI()
+updateUI() {
+    const isLoggedIn = localStorage.getItem('loggedIn') === 'true';
+    
+    // ... kode existing ...
+    
+    document.getElementById('exportSection').style.display = isLoggedIn ? 'block' : 'none';
+    
+    if (isLoggedIn) {
+        // ... kode existing ...
+        this.updateExportStats(JSON.parse(localStorage.getItem('rujukan') || '[]'));
     }
+}
 
-    loadData() {
-        const rujukan = JSON.parse(localStorage.getItem('rujukan') || '[]');
-        this.renderRujukan(rujukan);
-        this.updateStats(rujukan);
-    }
+// Update di fungsi loadData()
+loadData() {
+    const rujukan = JSON.parse(localStorage.getItem('rujukan') || '[]');
+    this.renderRujukan(rujukan);
+    this.updateStats(rujukan);
+    this.updateExportStats(rujukan); // TAMBAHKAN INI
+}
 
     buatRujukan() {
         const rujukanBaru = {
