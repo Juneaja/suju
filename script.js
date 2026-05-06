@@ -83,6 +83,27 @@ loadData() {
     this.updateExportStats(rujukan); // TAMBAHKAN INI
 }
 
+    // Tambahkan fungsi import
+importJSON(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        try {
+            const data = JSON.parse(e.target.result);
+            let rujukanLama = JSON.parse(localStorage.getItem('rujukan') || '[]');
+            rujukanLama = rujukanLama.concat(data);
+            localStorage.setItem('rujukan', JSON.stringify(rujukanLama));
+            this.loadData();
+            this.showAlert(`✅ ${data.length} rujukan berhasil diimpor!`, 'success');
+        } catch (err) {
+            this.showAlert('❌ Format file JSON tidak valid!', 'danger');
+        }
+    };
+    reader.readAsText(file);
+}
+
     buatRujukan() {
         const rujukanBaru = {
             id: Date.now(),
