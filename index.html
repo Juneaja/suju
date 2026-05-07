@@ -116,53 +116,7 @@
         </div>
     </div>
 
-    <!-- Tombol Export Excel - TAMBAHKAN INI -->
-<div class="row mb-4" id="exportSection" style="display: none;">
-    <div class="col-12">
-        <div class="card">
-            <div class="card-body text-center">
-                <h5 class="card-title mb-3">
-                    <i class="fas fa-file-excel text-success me-2"></i>
-                    Ekspor Laporan Rujukan
-                </h5>
-                <div class="row g-3 justify-content-center">
-                    <div class="col-md-3">
-                        <button class="btn btn-success w-100" onclick="app.exportExcel('semua')">
-                            <i class="fas fa-file-excel me-2"></i>Excel Semua
-                        </button>
-                    </div>
-                    <div class="col-md-3">
-                        <button class="btn btn-warning w-100" onclick="app.exportExcel('bulan')">
-                            <i class="fas fa-calendar me-2"></i>Excel Bulan Ini
-                        </button>
-                    </div>
-                    <div class="col-md-3">
-                        <button class="btn btn-info w-100" onclick="app.exportExcel('minggu')">
-                            <i class="fas fa-calendar-week me-2"></i>Excel Minggu Ini
-                        </button>
-                    </div>
-                    <div class="col-md-3">
-                        <button class="btn btn-outline-secondary w-100" onclick="app.exportExcel('json')">
-                            <i class="fas fa-file-code me-2"></i>JSON Backup
-                        </button>
-                    </div>
-                </div>
-                <hr class="my-3">
-                <div class="row text-center">
-                    <div class="col-md-4">
-                        <small class="text-muted">📊 <strong id="exportSemua">0</strong> Total</small>
-                    </div>
-                    <div class="col-md-4">
-                        <small class="text-muted">📈 <strong id="exportBulan">0</strong> Bulan Ini</small>
-                    </div>
-                    <div class="col-md-4">
-                        <small class="text-muted">⚡ <strong id="exportMinggu">0</strong> Minggu Ini</small>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+
 
     <!-- FAB Buat Rujukan -->
     <button class="floating-btn d-none" id="fabBuatRujukan" data-bs-toggle="modal" data-bs-target="#modalBuatRujukan" title="Buat Rujukan Baru">
